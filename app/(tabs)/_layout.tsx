@@ -1,37 +1,48 @@
+import { HomeIcon, QuestionIcon, ScoreIcon } from '@/components/ui/Icons'
+import { BlurView } from 'expo-blur'
 import { Tabs } from 'expo-router';
-import React from 'react';
-
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-
+import { SafeAreaView } from 'react-native'
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-      }}>
+        tabBarActiveTintColor: '#fff' ,
+        tabBarStyle: {
+          backgroundColor: '#333',
+          paddingVertical: 10,
+          paddingHorizontal: 16,
+        }
+      }}
+      >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-          ),
+          tabBarIcon: ({ color }) => (
+            <HomeIcon name="home" size={24} color={color} />
+          )
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="score"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-          ),
+          title: 'Score',
+          tabBarIcon: ({ color }) => (
+            <ScoreIcon name="award" size={24} color={color} />
+          )
+        }}
+      />
+      <Tabs.Screen
+        name="questions"
+        options={{
+          title: 'Questions',
+          tabBarIcon: ({ color }) => (
+            <QuestionIcon name="question" size={24} color={color} />
+          )
         }}
       />
     </Tabs>
-  );
+  )
 }

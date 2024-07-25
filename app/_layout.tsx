@@ -1,37 +1,62 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { HomeIcon, LogginIcon, LogoutIcon } from '@/components/ui/Icons'
+import { useAuthStore } from '@/store/authStore'
+import {Link, Stack } from 'expo-router';
+import { Alert, Image, Pressable, Text, View } from 'react-native'
+const  logo = require('../assets/images/logo.png')
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
+  const auth = useAuthStore(state => state.isLogged)
+  const setAuth = useAuthStore(state => state.setAuth)
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{
+          headerStyle: { backgroundColor: '#333'},
+          headerTitleStyle: { color: 'transparent'},
+          headerTitleAlign: 'center',
+          headerBackTitleVisible: false,
+          title: 'Home',
+          headerLeft : () => (
+            <View className='flex-row justify-start items-center gap-2 bg-[#333]'>
+              <Image source={logo}  className='w-14 h-6'/>
+              <Text className='font-bold text-white text-[32px] text-center'>Ciclimath</Text>
+            </View>
+          ),
+          headerRight: () => (
+            <>
+            {
+              auth ? (
+                <Pressable onPress={() => setAuth(false)}>
+                  <LogoutIcon name="lock-open" size={24} color="white"/>
+                </Pressable>
+              ) :  (
+                <Link href={'/login'}>
+                  <LogginIcon name="lock" size={24} color="white"/>
+                </Link>
+                )
+            }
+            </>
+            )
+        }}
+        />
+        <Stack.Screen name="(auth)/login" options={{
+          title: 'Login',
+          headerStyle: { backgroundColor: '#333'},
+          headerTitleStyle: { color: 'white'},
+          headerTitleAlign: 'center',
+          headerTintColor: '#fff',
+          headerRight: () => (
+            <Link href={'/'}>
+              <HomeIcon name="home" size={24} color="white"/>
+            </Link>
+          )
+        }}/>
         <Stack.Screen name="+not-found" />
       </Stack>
-    </ThemeProvider>
+    </>
   );
 }
