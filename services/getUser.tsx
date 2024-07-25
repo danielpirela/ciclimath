@@ -6,6 +6,7 @@ export async function getUser(email : string) : Promise<User | any > {
     const {data : User, error} = await supabase.from('User').select('*').eq('email', email)
     if(User) {
         return User[0]
+
     }
     return { error }
 }

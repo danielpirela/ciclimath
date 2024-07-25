@@ -19,9 +19,10 @@ interface IsCorrect {
   id: string
 }
 export function ItemQuestion({data} : Props) {
-
   const user = useAuthStore(state => state.user)
   const idQuestions = user.question
+
+  const setUserIdQuestion = useAuthStore(state => state.setUser)
   const [idRealation, setIdRealation] = useState<string[]>([])
 
   const initialState = {
@@ -41,8 +42,13 @@ export function ItemQuestion({data} : Props) {
       answer,
       id: quest.id
     })
-
     setRelationIdQuestion(user.id, quest.id)
+    setUserIdQuestion({
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      question: [...user.question, quest.id]
+    })
   }
     else setIsCorrect({
       value: false,
@@ -53,24 +59,19 @@ export function ItemQuestion({data} : Props) {
   }
 
   useEffect(() => {
-    if (idQuestions && idRealation) setIdRealation([...idQuestions])
+    if (idQuestions && idRealation) setIdRealation(idQuestions)
   },[])
 
-
-
-
   return (
-      data ?
-        <BlurView intensity={90} key={data.id} className='flex-1 justify-center items-center p-2 rounded-md my-2 w-[90vw] h-[340px] border-solid border-2 border-[#333]/90'>
+      data && !idRealation.includes(data.id) && (
+        <BlurView intensity={90} key={data.id} className='flex-1 justify-center items-center p-2 rounded-md my-2 w-[90vw] h-[340px] border-solid border-2 border-[#333]/90 shadow-sm shadow-white/40'>
           <Text className='text-white pt-5 text-3xl font-semibold'>Cual seria el resultado de {data?.question} ?</Text>
           <View className='flex-1 flex-row justify-center items-center gap-2'>
           {data.answers.map((answer, index) => {
-            console.log(idRealation)
-
             return (
               <StyledPressable
-                disabled={isDisable || idRealation.includes(data.id)}
-                className={`flex-1 justify-center flex-col items-center bg-gray-700/50 active:bg-white active:text-black w-20 h-24 rounded-full ${isCorrect.value === true && isCorrect.id === data.id && answer === isCorrect.answer && idRealation.includes(data.id) ? 'bg-green-600' : ''}`}
+                disabled={isDisable}
+                className={`flex-1 justify-center flex-col items-center bg-gray-700/50 active:bg-white active:text-black w-20 h-24 rounded-full shadow-md shadow-white/30 ${isCorrect.value === true && isCorrect.id === data.id && answer === isCorrect.answer  ? 'bg-green-600' : ''}`}
                 onPress={() => handleCorrectAnswer(data, answer)}
               >
                 <Text key={String(index) + Math.random() * 10} className='text-white hover:text-gray-600 '>{answer}</Text>
@@ -85,10 +86,7 @@ export function ItemQuestion({data} : Props) {
             <Loader className="w-20 h-20"/>
             </View>
           </View>
-        </BlurView>:(
-          <View className='flex-1 justify-center items-center'>
-          <Loader className="w-64 h-64"/>
-          </View>
+        </BlurView>
         )
     )
 }

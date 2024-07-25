@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/authStore'
 import { List } from '@/components/List'
 import { getQuestions } from '@/services/getQuestions'
 import { Question } from '@/types/data'
+import { Loader } from '@/components/Loader'
 const  bg  = require('../../assets/images/bg.jpg')
 
 export default function HomeScreen() {
@@ -31,7 +32,14 @@ export default function HomeScreen() {
       <ImageBackground source={bg} resizeMode='cover' className='min-h-screen min-w-full justify-center items-center'>
       <BlurView intensity={30} className='flex-1 justify-center items-center min-w-full min-h-screen'>
         <SafeAreaView className='mb-32'>
-          {questions && <List data={questions}/>}
+          {questions ? (
+            <List data={questions}/>
+          ): (
+            <View className='flex-1 justify-center items-center'>
+            <Loader className='w-64 h-64'/>
+            </View>
+        )
+        }
         </SafeAreaView>
       </BlurView>
       </ImageBackground>
